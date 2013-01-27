@@ -190,18 +190,6 @@ void *CUDTUnited::get_ext_ptr(const UDTSOCKET u)
        return s->ext_ptr;
 }
 
-void CUDTUnited::set_ext_ptr(const UDTSOCKET u, void *ext_ptr)
-{
-       CUDTSocket* s = locate(u);
-       s->ext_ptr = ext_ptr;
-}
-
-void *CUDTUnited::get_ext_ptr(const UDTSOCKET u)
-{
-       CUDTSocket* s = locate(u);
-       return s->ext_ptr;      
-}
-
 int CUDTUnited::startup()
 {
    CGuard gcinit(m_InitLock);
@@ -1580,16 +1568,6 @@ void *CUDT::get_ext_ptr(UDTSOCKET u)
        return s_UDTUnited.get_ext_ptr(u);
 }
 
-void CUDT::set_ext_ptr(UDTSOCKET u, void *ext_ptr)
-{
-       return s_UDTUnited.set_ext_ptr(u, ext_ptr);
-}
-
-void *CUDT::get_ext_ptr(UDTSOCKET u)
-{
-       return s_UDTUnited.get_ext_ptr(u);
-}
-
 int CUDT::startup()
 {
    return s_UDTUnited.startup();
@@ -2198,16 +2176,6 @@ UDTSTATUS CUDT::getsockstate(UDTSOCKET u)
 
 namespace UDT
 {
-
-void set_ext_ptr(UDTSOCKET u, void *ext_ptr)
-{
-       return CUDT::set_ext_ptr(u, ext_ptr);
-}
-
-void *get_ext_ptr(UDTSOCKET u)
-{
-       return CUDT::get_ext_ptr(u);
-}
 
 void set_ext_ptr(UDTSOCKET u, void *ext_ptr)
 {
