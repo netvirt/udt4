@@ -23,6 +23,8 @@ CONTENT:
 
 To make: 
      make -e os=XXX arch=YYY 
+Windows (cross-compilation):
+     make CXX='compiler' os=WIN32
 
 XXX: [LINUX(default), BSD, OSX] 
 YYY: [IA32(default), POWERPC, IA64, AMD64] 

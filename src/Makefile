@@ -1,4 +1,6 @@
-C++ = g++ -g
+ifndef CXX
+    CXX = g++
+endif
 
 ifndef os
    os = LINUX
@@ -8,7 +10,10 @@ ifndef arch
    arch = IA32
 endif
 
-CCFLAGS = -fPIC -Wall -pthread -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
+CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
+ifeq ($(os), WIN32)
+CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
+endif
 
 ifeq ($(arch), IA32)
    CCFLAGS += -DIA32
@@ -33,16 +38,24 @@ endif
 OBJS = md5.o common.o window.o list.o buffer.o packet.o channel.o queue.o ccc.o cache.o core.o epoll.o api.o
 DIR = $(shell pwd)
 
-all: libudt.so libudt.a udt
+ifneq ($(os), WIN32)
+all: libudt udt
+else
+all: libudt libudt.a udt
+endif
 
 %.o: %.cpp %.h udt.h
-	$(C++) $(CCFLAGS) $< -c
+	$(CXX) $(CCFLAGS) $< -c
 
-libudt.so: $(OBJS)
-ifneq ($(os), OSX)
-	$(C++) -shared -o $@ $^
-else
-	$(C++) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm $^
+libudt: $(OBJS)
+ifeq ($(os), LINUX)
+	$(CXX) -shared -o libudt.so $^
+endif
+ifeq ($(os), OS_X)
+	$(CXX) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm $^
+endif
+ifeq ($(os), WIN32)
+	$(CXX) -shared -o libudt.dll $^ -Wl,--out-implib,libudt_dll.a -L/usr/i486-mingw32/lib -lws2_32
 endif
 
 libudt.a: $(OBJS)
