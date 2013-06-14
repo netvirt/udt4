@@ -71,15 +71,15 @@ written by
 #ifdef WIN32
    #ifndef __MINGW__
       // Explicitly define 32-bit and 64-bit numbers
-      /* typedef __int32 int32_t; */
-      /* typedef __int64 int64_t; */
-      /* typedef unsigned __int32 uint32_t; */
-      /* #ifndef LEGACY_WIN32 */
-      /*    typedef unsigned __int64 uint64_t; */
-      /* #else */
-      /*    // VC 6.0 does not support unsigned __int64: may cause potential problems. */
-      /*    typedef __int64 uint64_t; */
-      /* #endif */
+      typedef __int32 int32_t;
+      typedef __int64 int64_t;
+      typedef unsigned __int32 uint32_t;
+      #ifndef LEGACY_WIN32
+         typedef unsigned __int64 uint64_t;
+      #else
+         // VC 6.0 does not support unsigned __int64: may cause potential problems.
+         typedef __int64 uint64_t;
+      #endif
 
       #ifdef UDT_EXPORTS
          #define UDT_API __declspec(dllexport)
