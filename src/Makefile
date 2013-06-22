@@ -38,7 +38,7 @@ endif
 OBJS = md5.o common.o window.o list.o buffer.o packet.o channel.o queue.o ccc.o cache.o core.o epoll.o api.o
 DIR = $(shell pwd)
 
-ifneq ($(os), WIN32)
+ifeq ($(os), WIN32)
 all: libudt udt
 else
 all: libudt libudt.a udt
