@@ -55,7 +55,7 @@ ifeq ($(os), OS_X)
 	$(CXX) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm $^
 endif
 ifeq ($(os), WIN32)
-	$(CXX) -shared -o libudt.dll $^ -Wl,--out-implib,libudt_dll.a -L/usr/i486-mingw32/lib -lws2_32
+	$(CXX) -shared -o libudt.dll $^ -Wl,--out-implib,libudt_dll.a -lws2_32
 endif
 
 libudt.a: $(OBJS)
