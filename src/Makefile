@@ -12,7 +12,7 @@ endif
 
 CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
 ifeq ($(os), WIN32)
-CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
+CCFLAGS = -g -fPIC -Wall -lpthread -Wextra -D$(os) -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
 endif
 
 ifeq ($(arch), IA32)
