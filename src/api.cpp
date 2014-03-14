@@ -187,7 +187,10 @@ void CUDTUnited::set_ext_ptr(const UDTSOCKET u, void *ext_ptr)
 void *CUDTUnited::get_ext_ptr(const UDTSOCKET u)
 {
        CUDTSocket* s = locate(u);
-       return s->ext_ptr;
+       if (s)
+          return s->ext_ptr;
+       else
+          return NULL;
 }
 
 int CUDTUnited::startup()

@@ -579,7 +579,7 @@ void CUDT::connect(const sockaddr* serv_addr)
    // RendezevousQueue is used to temporarily store incoming handshake, non-rendezvous connections also require this function
    uint64_t ttl = 3000000;
    if (m_bRendezvous)
-      ttl *= 10;
+      ttl *= 2;
    ttl += CTimer::getTime();
    m_pRcvQueue->registerConnector(m_SocketID, this, m_iIPversion, serv_addr, ttl);
 
@@ -2572,7 +2572,7 @@ void CUDT::checkTimers()
    {
       // Haven't receive any information from the peer, is it dead?!
       // timeout: at least 16 expirations and must be greater than 10 seconds
-      if ((m_iEXPCount > 16) && (currtime - m_ullLastRspTime > 5000000 * m_ullCPUFrequency))
+      if ((m_iEXPCount > 5)) // && (currtime - m_ullLastRspTime > 5000000 * m_ullCPUFrequency))
       {
          //
          // Connection is broken. 
