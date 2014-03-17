@@ -2572,7 +2572,8 @@ void CUDT::checkTimers()
    {
       // Haven't receive any information from the peer, is it dead?!
       // timeout: at least 16 expirations and must be greater than 10 seconds
-      if ((m_iEXPCount > 5)) // && (currtime - m_ullLastRspTime > 5000000 * m_ullCPUFrequency))
+//	printf("m_iEXPCount: %d :: %lld :: %lld :: %d\n", m_iEXPCount, currtime - m_ullLastRspTime, 3000000 * m_ullCPUFrequency, (currtime - m_ullLastRspTime > 3000000 * m_ullCPUFrequency));
+      if ((m_iEXPCount > 5) && (currtime - m_ullLastRspTime > 3000000 * m_ullCPUFrequency))
       {
          //
          // Connection is broken. 
