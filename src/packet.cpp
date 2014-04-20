@@ -177,12 +177,12 @@ int CPacket::getLength() const
    return m_PacketVector[1].iov_len;
 }
 
-void CPacket::setLength(const int& len)
+void CPacket::setLength(int len)
 {
    m_PacketVector[1].iov_len = len;
 }
 
-void CPacket::pack(const int& pkttype, void* lparam, void* rparam, const int& size)
+void CPacket::pack(int pkttype, void* lparam, void* rparam, int size)
 {
    // Set (bit-0 = 1) and (bit-1~15 = type)
    m_nHeader[0] = 0x80000000 | (pkttype << 16);
@@ -390,7 +390,7 @@ int CHandShake::serialize(char* buf, int& size)
    return 0;
 }
 
-int CHandShake::deserialize(const char* buf, const int& size)
+int CHandShake::deserialize(const char* buf, int size)
 {
    if (size < m_iContentSize)
       return -1;

@@ -82,7 +82,7 @@ CUnitQueue::~CUnitQueue()
    }
 }
 
-int CUnitQueue::init(const int& size, const int& mss, const int& version)
+int CUnitQueue::init(int size, int mss, int version)
 {
    CQEntry* tempq = NULL;
    CUnit* tempu = NULL;
@@ -252,7 +252,7 @@ CSndUList::~CSndUList()
    #endif
 }
 
-void CSndUList::insert(const int64_t& ts, const CUDT* u)
+void CSndUList::insert(int64_t ts, const CUDT* u)
 {
    CGuard listguard(m_ListLock);
 
@@ -279,7 +279,7 @@ void CSndUList::insert(const int64_t& ts, const CUDT* u)
    insert_(ts, u);
 }
 
-void CSndUList::update(const CUDT* u, const bool& reschedule)
+void CSndUList::update(const CUDT* u, bool reschedule)
 {
    CGuard listguard(m_ListLock);
 
@@ -352,7 +352,7 @@ uint64_t CSndUList::getNextProcTime()
    return m_pHeap[0]->m_llTimeStamp;
 }
 
-void CSndUList::insert_(const int64_t& ts, const CUDT* u)
+void CSndUList::insert_(int64_t ts, const CUDT* u)
 {
    CSNode* n = u->m_pSNode;
 
@@ -487,10 +487,10 @@ CSndQueue::~CSndQueue()
    delete m_pSndUList;
 }
 
-void CSndQueue::init(const CChannel* c, const CTimer* t)
+void CSndQueue::init(CChannel* c, CTimer* t)
 {
-   m_pChannel = (CChannel*)c;
-   m_pTimer = (CTimer*)t;
+   m_pChannel = c;
+   m_pTimer = t;
    m_pSndUList = new CSndUList;
    m_pSndUList->m_pWindowLock = &m_WindowLock;
    m_pSndUList->m_pWindowCond = &m_WindowCond;
@@ -684,7 +684,7 @@ CHash::~CHash()
    delete [] m_pBucket;
 }
 
-void CHash::init(const int& size)
+void CHash::init(int size)
 {
    m_pBucket = new CBucket* [size];
 
@@ -694,7 +694,7 @@ void CHash::init(const int& size)
    m_iHashSize = size;
 }
 
-CUDT* CHash::lookup(const int32_t& id)
+CUDT* CHash::lookup(int32_t id)
 {
    // simple hash function (% hash table size); suitable for socket descriptors
    CBucket* b = m_pBucket[id % m_iHashSize];
@@ -709,19 +709,19 @@ CUDT* CHash::lookup(const int32_t& id)
    return NULL;
 }
 
-void CHash::insert(const int32_t& id, const CUDT* u)
+void CHash::insert(int32_t id, CUDT* u)
 {
    CBucket* b = m_pBucket[id % m_iHashSize];
 
    CBucket* n = new CBucket;
    n->m_iID = id;
-   n->m_pUDT = (CUDT*)u;
+   n->m_pUDT = u;
    n->m_pNext = b;
 
    m_pBucket[id % m_iHashSize] = n;
 }
 
-void CHash::remove(const int32_t& id)
+void CHash::remove(int32_t id)
 {
    CBucket* b = m_pBucket[id % m_iHashSize];
    CBucket* p = NULL;
@@ -777,7 +777,7 @@ CRendezvousQueue::~CRendezvousQueue()
    m_lRendezvousID.clear();
 }
 
-void CRendezvousQueue::insert(const UDTSOCKET& id, CUDT* u, const int& ipv, const sockaddr* addr, const uint64_t& ttl)
+void CRendezvousQueue::insert(const UDTSOCKET& id, CUDT* u, int ipv, const sockaddr* addr, uint64_t ttl)
 {
    CGuard vg(m_RIDVectorLock);
 
@@ -843,9 +843,9 @@ void CRendezvousQueue::updateConnStatus()
       {
          if (CTimer::getTime() >= i->m_ullTTL)
          {
-            // connection timer expired, acknowledge app via epoll (UDT send will return error so that apps know this connection has failed)
+            // connection timer expired, acknowledge app via epoll
             i->m_pUDT->m_bConnecting = false;
-            CUDT::s_UDTUnited.m_EPoll.enable_write(i->m_iID, i->m_pUDT->m_sPollID);
+            CUDT::s_UDTUnited.m_EPoll.update_events(i->m_iID, i->m_pUDT->m_sPollID, UDT_EPOLL_ERR, true);
             continue;
          }
 
@@ -937,7 +937,7 @@ CRcvQueue::~CRcvQueue()
    }
 }
 
-void CRcvQueue::init(const int& qsize, const int& payload, const int& version, const int& hsize, const CChannel* cc, const CTimer* t)
+void CRcvQueue::init(int qsize, int payload, int version, int hsize, CChannel* cc, CTimer* t)
 {
    m_iPayloadSize = payload;
 
@@ -946,8 +946,8 @@ void CRcvQueue::init(const int& qsize, const int& payload, const int& version, c
    m_pHash = new CHash;
    m_pHash->init(hsize);
 
-   m_pChannel = (CChannel*)cc;
-   m_pTimer = (CTimer*)t;
+   m_pChannel = cc;
+   m_pTimer = t;
 
    m_pRcvUList = new CRcvUList;
    m_pRendezvousQueue = new CRendezvousQueue;
@@ -1020,7 +1020,7 @@ void CRcvQueue::init(const int& qsize, const int& payload, const int& version, c
       if (0 == id)
       {
          if (NULL != self->m_pListener)
-            ((CUDT*)self->m_pListener)->listen(addr, unit->m_Packet);
+            self->m_pListener->listen(addr, unit->m_Packet);
          else if (NULL != (u = self->m_pRendezvousQueue->retrieve(addr, id)))
          {
             // asynchronous connect: call connect here
@@ -1103,7 +1103,7 @@ TIMER_CHECK:
    #endif
 }
 
-int CRcvQueue::recvfrom(const int32_t& id, CPacket& packet)
+int CRcvQueue::recvfrom(int32_t id, CPacket& packet)
 {
    CGuard bufferlock(m_PassLock);
 
@@ -1159,14 +1159,14 @@ int CRcvQueue::recvfrom(const int32_t& id, CPacket& packet)
    return packet.getLength();
 }
 
-int CRcvQueue::setListener(const CUDT* u)
+int CRcvQueue::setListener(CUDT* u)
 {
    CGuard lslock(m_LSLock);
 
    if (NULL != m_pListener)
       return -1;
 
-   m_pListener = (CUDT*)u;
+   m_pListener = u;
    return 0;
 }
 
@@ -1178,7 +1178,7 @@ void CRcvQueue::removeListener(const CUDT* u)
       m_pListener = NULL;
 }
 
-void CRcvQueue::registerConnector(const UDTSOCKET& id, CUDT* u, const int& ipv, const sockaddr* addr, const uint64_t& ttl)
+void CRcvQueue::registerConnector(const UDTSOCKET& id, CUDT* u, int ipv, const sockaddr* addr, uint64_t ttl)
 {
    m_pRendezvousQueue->insert(id, u, ipv, addr, ttl);
 }
@@ -1226,7 +1226,7 @@ CUDT* CRcvQueue::getNewEntry()
    return u;
 }
 
-void CRcvQueue::storePkt(const int32_t& id, CPacket* pkt)
+void CRcvQueue::storePkt(int32_t id, CPacket* pkt)
 {
    CGuard bufferlock(m_PassLock);   
 

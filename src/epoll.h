@@ -52,12 +52,14 @@ struct CEPollDesc
    int m_iID;                                // epoll ID
    std::set<UDTSOCKET> m_sUDTSocksOut;       // set of UDT sockets waiting for write events
    std::set<UDTSOCKET> m_sUDTSocksIn;        // set of UDT sockets waiting for read events
+   std::set<UDTSOCKET> m_sUDTSocksEx;        // set of UDT sockets waiting for exceptions
 
    int m_iLocalID;                           // local system epoll ID
    std::set<SYSSOCKET> m_sLocals;            // set of local (non-UDT) descriptors
 
    std::set<UDTSOCKET> m_sUDTWrites;         // UDT sockets ready for write
    std::set<UDTSOCKET> m_sUDTReads;          // UDT sockets ready for read
+   std::set<UDTSOCKET> m_sUDTExcepts;        // UDT sockets with exceptions (connection broken, etc.)
 };
 
 class CEPoll
@@ -148,44 +150,16 @@ public: // for CUDTUnited API
 public: // for CUDT to acknowledge IO status
 
       // Functionality:
-      //    set a UDT socket writable.
+      //    Update events available for a UDT socket.
       // Parameters:
       //    0) [in] uid: UDT socket ID.
       //    1) [in] eids: EPoll IDs to be set
+      //    1) [in] events: Combination of events to update
+      //    1) [in] enable: true -> enable, otherwise disable
       // Returned value:
-      //    0 if success, otherwise an error number.
+      //    0 if success, otherwise an error number
 
-   int enable_write(const UDTSOCKET& uid, std::set<int>& eids);
-
-      // Functionality:
-      //    set a UDT socket readable.
-      // Parameters:
-      //    0) [in] uid: UDT socket ID.
-      //    1) [in] eids: EPoll IDs to be set
-      // Returned value:
-      //    0 if success, otherwise an error number.
-
-   int enable_read(const UDTSOCKET& uid, std::set<int>& eids);
-
-      // Functionality:
-      //    reset a the writable status of a UDT socket.
-      // Parameters:
-      //    0) [in] uid: UDT socket ID.
-      //    1) [in] eids: EPoll IDs to be set
-      // Returned value:
-      //    0 if success, otherwise an error number.
-
-   int disable_write(const UDTSOCKET& uid, std::set<int>& eids);
-
-      // Functionality:
-      //    reset a the readable status of a UDT socket.
-      // Parameters:
-      //    0) [in] uid: UDT socket ID.
-      //    1) [in] eids: EPoll IDs to be set
-      // Returned value:
-      //    0 if success, otherwise an error number.
-
-   int disable_read(const UDTSOCKET& uid, std::set<int>& eids);
+   int update_events(const UDTSOCKET& uid, std::set<int>& eids, int events, bool enable);
 
 private:
    int m_iIDSeed;                            // seed to generate a new ID

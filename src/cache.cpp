@@ -109,7 +109,7 @@ int CInfoBlock::getKey()
    return m_piIP[0] + m_piIP[1] + m_piIP[2] + m_piIP[3];
 }
 
-void CInfoBlock::convert(const sockaddr* addr, const int& ver, uint32_t ip[])
+void CInfoBlock::convert(const sockaddr* addr, int ver, uint32_t ip[])
 {
    if (ver == AF_INET)
    {

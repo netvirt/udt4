@@ -84,7 +84,7 @@ public:
 template<typename T> class CCache
 {
 public:
-   CCache(const int& size = 1024):
+   CCache(int size = 1024):
    m_iMaxSize(size),
    m_iHashSize(size * 3),
    m_iCurrSize(0)
@@ -209,7 +209,7 @@ public:
       // Returned value:
       //    None.
 
-   void setSizeLimit(const int& size)
+   void setSizeLimit(int size)
    {
       m_iMaxSize = size;
       m_iHashSize = size * 3;
@@ -286,7 +286,7 @@ public:
       // Returned value:
       //    None.
 
-   static void convert(const sockaddr* addr, const int& ver, uint32_t ip[]);
+   static void convert(const sockaddr* addr, int ver, uint32_t ip[]);
 };
 
 
