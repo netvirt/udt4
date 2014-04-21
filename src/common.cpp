@@ -134,7 +134,7 @@ void CTimer::rdtsc(uint64_t &x)
 uint64_t CTimer::readCPUFrequency()
 {
    uint64_t frequency = 1;  // 1 tick per microsecond.
-
+#if 0
    #if defined(IA32) || defined(IA64) || defined(AMD64)
       uint64_t t1, t2;
 
@@ -156,7 +156,7 @@ uint64_t CTimer::readCPUFrequency()
       mach_timebase_info(&info);
       frequency = info.denom * 1000ULL / info.numer;
    #endif
-
+#endif
    // Fall back to microsecond if the resolution is not high enough.
    if (frequency < 10)
    {
