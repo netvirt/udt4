@@ -11,9 +11,6 @@ ifndef arch
 endif
 
 CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
-ifeq ($(os), WIN32)
-CCFLAGS = -g -fPIC -Wall -lpthread -Wextra -D$(os) -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
-endif
 
 ifeq ($(arch), IA32)
    CCFLAGS += -DIA32
@@ -35,28 +32,34 @@ ifeq ($(arch), AMD64)
    CCFLAGS += -DAMD64
 endif
 
+
+ifeq ($(os), OSX)
+   SHARED_LIB = libudt.dylib
+   STATIC_LIB = libudt.a
+   MACOS_SDK_SELECT = -mmacosx-version-min=10.6 -isysroot /SDKs/MacOSX10.6.sdk
+   CCFLAGS += $(MACOS_SDK_SELECT)
+   LDFLAGS += $(MACOS_SDK_SELECT) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm
+else ifeq ($(os), WIN32)
+   SHARED_LIB = libudt.dll
+   STATIC_LIB =
+   CCFLAGS += -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
+   LDFLAGS += -shared -Wl,--out-implib,libudt_dll.a -lws2_32
+else
+   SHARED_LIB = libudt.so
+   STATIC_LIB = libudt.a
+   LDFLAGS += -shared
+endif
+
 OBJS = md5.o common.o window.o list.o buffer.o packet.o channel.o queue.o ccc.o cache.o core.o epoll.o api.o
 DIR = $(shell pwd)
 
-ifeq ($(os), WIN32)
-all: libudt udt
-else
-all: libudt libudt.a udt
-endif
+all: $(SHARED_LIB) $(STATIC_LIB) udt
 
 %.o: %.cpp %.h udt.h
 	$(CXX) $(CCFLAGS) $< -c
 
-libudt: $(OBJS)
-ifeq ($(os), LINUX)
-	$(CXX) -shared -o libudt.so $^
-endif
-ifeq ($(os), OS_X)
-	$(CXX) -dynamiclib -o libudt.dylib -lstdc++ -lpthread -lm $^
-endif
-ifeq ($(os), WIN32)
-	$(CXX) -shared -o libudt.dll $^ -Wl,--out-implib,libudt_dll.a -lws2_32
-endif
+$(SHARED_LIB): $(OBJS)
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 libudt.a: $(OBJS)
 	ar -rcs $@ $^
