@@ -108,7 +108,7 @@ CUDT::CUDT()
    m_Linger.l_onoff = 1;
    m_Linger.l_linger = 180;
    m_iUDPSndBufSize = 65536;
-#ifdef OS_X
+#ifdef OSX
    m_iUDPRcvBufSize = 3500000;
 #else
    m_iUDPRcvBufSize = m_iRcvBufSize * m_iMSS;
