@@ -59,7 +59,7 @@ all: $(SHARED_LIB) $(STATIC_LIB) udt
 	$(CXX) $(CCFLAGS) $< -c
 
 $(SHARED_LIB): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $^
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
 libudt.a: $(OBJS)
 	ar -rcs $@ $^
