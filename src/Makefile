@@ -10,7 +10,7 @@ ifndef arch
    arch = IA32
 endif
 
-CCFLAGS = -g -fPIC -Wall -pthread -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
+CCFLAGS = -g -fPIC -Wall -Wextra -D$(os) #-finline-functions -O3 -fno-strict-aliasing #-msse3
 
 ifeq ($(arch), IA32)
    CCFLAGS += -DIA32
@@ -42,7 +42,7 @@ ifeq ($(os), OSX)
 else ifeq ($(os), WIN32)
    SHARED_LIB = libudt.dll
    STATIC_LIB =
-   CCFLAGS += -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
+   CCFLAGS += -lpthread -DUDT_EXPORTS -D_WIN32_WINNT=0x0501
    LDFLAGS += -shared -Wl,--out-implib,libudt_dll.a -lws2_32
 else
    SHARED_LIB = libudt.so
