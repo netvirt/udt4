@@ -110,6 +110,10 @@ CUDT::CUDT()
    m_iUDPSndBufSize = 65536;
 #ifdef OSX
    m_iUDPRcvBufSize = 3500000;
+#elseif __OpenBSD__
+   m_iUDPRcvBufSize = 65536;
+#elseif __FreeBSD__
+   m_iUDPRcvBufSize = 65536;
 #else
    m_iUDPRcvBufSize = m_iRcvBufSize * m_iMSS;
 #endif
